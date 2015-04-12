@@ -5,6 +5,10 @@ Platforms:
 ---------
 - Linux cli
 
+Protip:
+-------
+- Record the information you want, then query the database for it.
+
 Basic Usage:
 ------------
       ./es.py ego [USERNAME]| Get the profile of a user. (Doesn't work on Organizations.)
