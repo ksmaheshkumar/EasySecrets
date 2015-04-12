@@ -5,6 +5,7 @@
 # Native imports
 import sys
 
+from core.libs.paint import colors # For colorful output.
 from core.info import Help # Help Message
 from core.libs.shark import huntdown # HUNT DOWN INFORMATION !
 from core.libs.functions import utilities
@@ -20,17 +21,21 @@ import requests
 # May use configure.py to block out things you don't want to grab when hunting.
 
 # SEARCH FEATURES:
-# Add github dorks, for faster searching.
+# Add github dorks, for code, repo ... etc searching.
 
 # BUGS:
 # Emails render as hex ... must find a way to decode.
 
-PL = "https://github.com/" # Initial Profile link
+# Colored variables for output use.
+INFO = colors.W+"[INFO]"+colors.N + ": "
+FAIL = colors.R+"[FAILED]"+colors.N + ": "
+ERROR = colors.R+"[ERROR]"+colors.N + ": "
+FOUND = colors.W+"[FOUND]"+colors.N + ": "
 
-HTTP_PROXY = {'http':''} # Set the proxy yourself.
-SOCKS5_PROXY = [] # Set the proxy yourself.
-HTTP_PROXY['http'] = '' # Uses your current ip by defualt.
-SOCKS5_PROXY.append("127.0.0.1")
+#HTTP_PROXY = {'http':''} # Set the proxy yourself.
+#SOCKS5_PROXY = [] # Set the proxy yourself.
+#HTTP_PROXY['http'] = '' # Uses your current ip by defualt.
+#SOCKS5_PROXY.append("127.0.0.1")
 
 def main(IFNOMAINARG):
 
@@ -55,14 +60,29 @@ def main(IFNOMAINARG):
         if sys.argv[1] == 'ping' and s2 is True and s3 is False and s4 is False:
             dbops.QueryUserDatabase(sys.argv[2])
 
-        if 'ping' and s3 is True and s4 is True and sys.argv[3] == 'repo':
-            dbops.QueryUserRepoDatabase(sys.argv[2], sys.argv[4])
+        if sys.argv[1] == 'ping' and s3 is True and s4 is True and sys.argv[3] == 'repo':
+            try:
+                dbops.QueryUserRepoDatabase(sys.argv[2], sys.argv[4])
+            except IOError:
+                utilities.pi('{}No repos have been recoreded for {}\n'.format(ERROR, sys.argv[2]))
 
-        if 'ping' and s3 is True and s4 is True and sys.argv[3] == 'followers':
-            dbops.QueryUserFollowersDatabase(sys.argv[2], sys.argv[4])
+        if sys.argv[1] == 'ping' and s3 is True and s4 is True and sys.argv[3] == 'followers':
+            try:
+                dbops.QueryUserFollowersDatabase(sys.argv[2], sys.argv[4])
+            except IOError:
+                utilities.pi('{}No followers have been recoreded for {}\n'.format(ERROR, sys.argv[2]))
 
-        if 'ping' and s3 is True and s4 is True and sys.argv[3] == 'following':
-            dbops.QueryUserFollowingDatabase(sys.argv[2], sys.argv[4])
+        if sys.argv[1] == 'ping' and s3 is True and s4 is True and sys.argv[3] == 'following':
+            try:
+                dbops.QueryUserFollowingDatabase(sys.argv[2], sys.argv[4])
+            except IOError:
+                utilities.pi('{}None of the users that {} is following have been recorded yet.\n'.format(ERROR, sys.argv[2]))
+
+        if sys.argv[1] == 'ping'  and s3 is True and s4 is True and sys.argv[3] == 'starred':
+            try:
+                dbops.QueryUserStarredRepoDatabase(sys.argv[2], sys.argv[4])
+            except IOError:
+                utilities.pi('{} No starred repositories have been recorded for {} \n'.format(ERROR, sys.argv[2]))
 
         if  sys.argv[1] == 'ego' and s2 is True and s3 is False:
             dbops.WriteUserToDatabaseSILENTLY(sys.argv[2])
