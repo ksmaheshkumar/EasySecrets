@@ -1,37 +1,37 @@
 # Easy Secrets
-Perform OSINT on Github repos and users.
+Perform OSINT on Github users.
 
 Platforms:
 ---------
-- Linux
+- Linux cli
 
 Basic Usage:
 ------------
-   ./es.py ego [USERNAME]| Get the profile of a user. (Doesn't work on Organizations.)
+      ./es.py ego [USERNAME]| Get the profile of a user. (Doesn't work on Organizations.)
 
-   ./es.py -a [USERNAME]| Add a username to the user database.
+      ./es.py -a [USERNAME]| Add a username to the user database.
 
-   ./es.py ping [USERNAME] OR ID number | query the user database for a username.
+      ./es.py ping [USERNAME] OR ID number | query the user database for a username.
 
          OR
 
-   ./es.py ping [USERNAME] [SECTION] [KEYWORD]
+      ./es.py ping [USERNAME] [SECTION] [KEYWORD]
 
-   | Section: repo      | query a users repo database for a repo name.
-   | Section: followers | query a users followers database for a username that follows the user.
-   | Section: following | query a users following database for a user that the user is following.
-   | Section: starred   | query a users starred repo database for a repo name they have bookmarked.
+      | Section: repo      | query a users repo database for a repo name.
+      | Section: followers | query a users followers database for a username that follows the user.
+      | Section: following | query a users following database for a user that the user is following.
+      | Section: starred   | query a users starred repo database for a repo name they have bookmarked.
 
 
-   ./es.py -g [USERNAME] [KEYWORD] | Get something from a user.
+      ./es.py -g [USERNAME] [KEYWORD] | Get something from a user.
 
-   | Keyword: repos     | Record all the repos a user has.
-   | Keyword: followers | Record all the followers a user has.
-   | Keyword: starred   | Record all repos a user has bookmarked.
-   | Keyword: following | Record all the accounts a user is following.
+      | Keyword: repos     | Record all the repos a user has.
+      | Keyword: followers | Record all the followers a user has.
+      | Keyword: starred   | Record all repos a user has bookmarked.
+      | Keyword: following | Record all the accounts a user is following.
 
 Changelog:
-----------.
+----------
 - Added options.
 - Added Keywords.
 - Added Sections.
