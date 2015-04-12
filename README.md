@@ -1,4 +1,4 @@
-# Easy Secrets
+# EasySecrets
 Perform OSINT on Github users.
 
 Platforms:
