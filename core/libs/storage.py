@@ -16,6 +16,26 @@ FOUND = colors.W+"[FOUND]"+colors.N + ": "
 class DatabaseOpertaions():
 
     # QUERY/LOOKUP INFORMATION
+
+    def QueryUserStarredRepoDatabase(self, username, reponame):
+        username = username.lower()
+        reposdatabasepath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/repositories/starred/{}.starred.repos'.format(username)
+        utilities.pi(" ")
+        with open(reposdatabasepath, 'r') as file:
+            # Database item check
+            ic = utilities.sbc(reposdatabasepath, reponame) # Database item/name check
+            for item in file:
+                itemlink = item.split(' - ')[1].replace("\n", '') # Link to github profile
+                item = item.split(' - ')[0] # github username
+                if reponame in item and ic is True:
+                    utilities.pi("{}{}".format(FOUND, item + " - " + itemlink))
+                    break
+
+                if ic is None:
+                    utilities.pi("{}{} Not found in {}'s starred repositories database".format(FAIL, reponame, username))
+                    break
+        utilities.pi(" ")
+
     def QueryUserFollowingDatabase(self, username, followingname):
         username = username.lower()
         followingdatabasepath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/following/{}.following'.format(username)
@@ -234,7 +254,7 @@ class DatabaseOpertaions():
     def WriteWhoUserIsFollowingToFile(self, Username, Following):
         utilities.pi(INFO + "Collected {} users that {} is following".format(len(Following), Username))
         time.sleep(3)
-        utilities.pi(INFO + "Writing {} to disk\n".format(len(Following), Username))
+        utilities.pi(INFO + "Writing {} to disk".format(len(Following), Username))
         Username = Username.lower() # Override any UPPERCASE strings
         followspath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/following/{}.following'.format(Username)
         with open(followspath, 'a+') as file:
@@ -247,7 +267,7 @@ class DatabaseOpertaions():
                     if IDN is None:
                         IDN = "No Profile Traceroute."
                     file.write(line + " - " + IDN + " - " + github.domain + line + "\n")
-        utilities.pi(INFO + "Wrote {} to disk".format(len(Following), Username))
+        utilities.pi(INFO + "Wrote {} to disk\n".format(len(Following), Username))
 
     def WriteUsersFollowersToFile(self, Username, Followers):
         utilities.pi(INFO + "Collected {} of {}'s followers".format(len(Followers), Username))
@@ -287,7 +307,7 @@ class DatabaseOpertaions():
     def WriteUsersStarredReposToFile(self, Username, Repos):
         utilities.pi(INFO + "Collected {} of {}'s Starred Repositories".format(len(Repos), Username))
         time.sleep(3)
-        utilities.pi(INFO + "Writing {} of {}'s Starred Repositories to disk\n".format(len(Repos), Username))
+        utilities.pi(INFO + "Writing {} of {}'s Starred Repositories to disk".format(len(Repos), Username))
         idwe = 'https://github.com'
         Username = Username.lower()
         repospath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/repositories/starred/{}.starred.repos'.format(Username)
