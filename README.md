@@ -1,48 +1,70 @@
 # Easy Secrets
-Perform OSINT on Github users.
+Perform OSINT on Github users and organizations.
 
 Platforms:
 ---------
 - Linux cli
 
+Report a bug:
+-------------
+https://github.com/GuerrillaWarfare/EasySecrets/issues
+
 Protip:
 -------
+- When querying a database, a "keyword" is something or someone you're looking for.
 - Record the information you want, then query the database for it.
 
 Basic Usage:
 ------------
-      ./es.py ego [USERNAME]| Get the profile of a user. (Doesn't work on Organizations.)
+    # Global operations
+    -----------------------
+    ./es.py ego [USERNAME]| Get the profile of a user. (Doesn't work on Organizations.)
 
-      ./es.py -a [USERNAME]| Add a username to the user database.
+    ./es.py -a [USERNAME]| Add a username to the user database.
 
-      ./es.py ping [USERNAME] OR ID number | query the user database for a username.
+    ./es.py ping [USERNAME] OR ID number | query the user database for a username.
 
-         OR
+          OR
 
-      ./es.py ping [USERNAME] [SECTION] [KEYWORD]
+    # User query operations
+     -----------------------
+    ./es.py ping [USERNAME] [SECTION] [KEYWORD]
 
-      | Section: repo      | query a users repo database for a repo name.
-      | Section: followers | query a users followers database for a username that follows the user.
-      | Section: following | query a users following database for a user that the user is following.
-      | Section: starred   | query a users starred repo database for a repo name they have bookmarked.
+    | Section: repo      | query a users repo database for a repo name.
+    | Section: followers | query a users followers database for a username that follows the user.
+    | Section: following | query a users following database for a user that the user is following.
+    | Section: starred   | query a users starred repo database for a repo name they have bookmarked.
 
+    # User offensive operations
+    -----------------------
+    ./es.py -g [USERNAME] [KEYWORD] | Get something from a user.
 
-      ./es.py -g [USERNAME] [KEYWORD] | Get something from a user.
+    | Keyword: repos     | Record all the repos a user has.
+    | Keyword: followers | Record all the followers a user has.
+    | Keyword: starred   | Record all repos a user has bookmarked.
+    | Keyword: following | Record all the accounts a user is following.
 
-      | Keyword: repos     | Record all the repos a user has.
-      | Keyword: followers | Record all the followers a user has.
-      | Keyword: starred   | Record all repos a user has bookmarked.
-      | Keyword: following | Record all the accounts a user is following.
+          OR
+
+    # Organiztaon query operations
+     ------------------------------
+    ./es.py ping org [ORGNAME] [SECTION] [KEYWORD]
+
+    | Section: repo      | query an organizations repo database for a repo name.
+    | Section: ppl       | query an organizations people database for a user or user id.
+
+    # Organization offensive operations
+    --------------------------------------
+    ./es.py -g org [ORGNAME][KEYWORD] | Get something from an organization.
+
+    | Keyword: repos     | Record all the repos an organization has.
+    | Keyword: ppl       | Record all the people an organization has.
 
 Changelog:
 ----------
-- Added options.
-- Added Keywords.
-- Added Sections.
-- Added database infrastructure.
-- Added user database to mass collect usernames/ids
-- Added the ability to collect & record all of a users followers ... etc.
-- Added database components to ensure that information gets recorded appropriately.
+- Added more options.
+- Added the ability to record an organizations people (members).
+- Added the ability to record an organizations repositories.
 
 Python Dependencies:
 --------------------
