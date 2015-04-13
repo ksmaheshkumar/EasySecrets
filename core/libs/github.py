@@ -45,10 +45,117 @@ github = GITHUB() # Never call this class outside of this module.
 
 class REGEXRESPONSES():
 
+    # ORGANIZATION OPERATIONAL FUNCTIONS:
+    # ...
+    def CollectORGRepos(self, USERNAME):
+        try:
+            #print ""
+            #FollowersNumber = regexops.GetNumberOfUserFollowers(USERNAME)
+            utilities.pi('\n{}Attempting to collect all of {}\'s github repositories'.format(INFO, USERNAME))
+            d = regexops.GrabNextPageOfORGRepos("https://github.com/{}".format(USERNAME))
+            p = [] # pages visited
+            p.append("https://github.com/{}".format(USERNAME))
+            f = [] # list of followers, the container
+            while True:
+                if d is None: # If there is only ONE page of followers
+                    for s in p:
+                        d = regexops.GetRepoNames(s)
+                        for i in d:
+                            f.append(i)
+                        return f
+                # If there is more than one page of followers.
+                for o in p:
+                    time.sleep(1)
+                    if o is None:
+                        p.remove(p[-1]) # Makes sure Nonetype is removed
+                        for z in p:
+                            n = regexops.GetRepoNames(z)
+                            for so in n:
+                                f.append(so)
+                        return f
+                    o = regexops.GrabNextPageOfORGRepos(o)
+                    p.append(o)
+                    #print p | for debugging
+                #return p | for debugging
 
+        except TypeError:
+            pass
+
+    def CollectORGPEOPLE(self, USERNAME):
+        try:
+            utilities.pi('\n{}Attempting to collect all of {}\'s github people'.format(INFO, USERNAME))
+            d = regexops.GrabNextPageOfOrgPeople("https://github.com/orgs/{}/people".format(USERNAME))
+            p = [] # pages visited
+            p.append("https://github.com/orgs/{}/people".format(USERNAME))
+            f = [] # list of followers, the container
+            #return p
+            while True:
+                if d is None: # If there is only ONE page of followers
+                    for s in p:
+                        d = regexops.GrabNamesOfOrgPeople(s)
+                        for i in d:
+                            f.append(i)
+                        return f
+                # If there is more than one page of followers.
+                for o in p:
+                    time.sleep(1)
+                    if o is None:
+                        p.remove(p[-1]) # Makes sure Nonetype is removed
+                        for z in p:
+                            n = regexops.GrabNamesOfOrgPeople(z)
+                            for so in n:
+                                f.append(so)
+                        return f
+                    o = regexops.GrabNextPageOfOrgPeople(o)
+                    p.append(o)
+                    #print p | for debugging
+                #return p | for debugging
+
+        except TypeError:
+            pass
+
+    # FOR ORG REPO OPS ONLY!
+    def GrabNextPageOfORGRepos(self, url):
+        # Content Extractor
+        # Grab the next page of followers if there are more than one.
+        il = 'https://github.com'
+        content = utilities.GetHTTPRequest(url).text
+        try:
+            nplc = re.findall(r' <a class="next_page" rel="next" href="/.*page=.*">Next</a>' , content)
+            nplc1 = nplc[0].replace(' <a class="next_page" rel="next" href="', '').replace('">Next</a>', '')
+            np = il + nplc1
+            return np
+        except IndexError:
+            return None
+
+    # FOR REPO PEOPLE OPS ONLY !
+    def GrabNextPageOfOrgPeople(self, url):
+        # Content Extractor
+        # Grab the next page of people if there are more than one.
+        il = 'https://github.com'
+        content = utilities.GetHTTPRequest(url).text
+        try:
+            nplc = re.findall(r' <a class="next_page" rel="next" href="/.*page=.*">Next</a>' , content)
+            nplc1 = nplc[0].replace(' <a class="next_page" rel="next" href="', '').replace('">Next</a>', '')
+            np = il + nplc1
+            return np
+        except IndexError:
+            return None
+
+    # FOR REPO PEOPLE OPS ONLY !
+    def GrabNamesOfOrgPeople(self, url):
+        # Content Extractor
+        # Grab all org people names
+        #il = 'https://github.com'
+        content = utilities.GetHTTPRequest(url).text
+        nplc = re.findall(r'<strong class="member-username css-truncate-target">(.*?)</strong>' , content)
+        pn = nplc
+        return pn
+
+    # ---------------------------
     # USER OPERATIONAL FUNCTIONS!
-    def GetUserRepoActivity(self):
-        pass
+    #def GetUserRepoActivity(self):
+    #    pass
 
     def GetWhenUserJoined(self, USERNAME):
         link2profile = github.domain + USERNAME
@@ -77,11 +184,23 @@ class REGEXRESPONSES():
                 p = re.findall(r'href=".*"', x)
                 for item in p:
                     item = item.replace('href=', '').replace('"', '')
+                    item = item.replace(' itemprop=name codeRepository', '')
                     l.append(item)
         return l
 
     def GetCurrentProfile(self, USERNAME):
         # Provide output for a users GithubProfile
+
+        # Deter humans who may try to get an organzations profile information.
+        orgdetection = utilities.GetHTTPRequest('https://github.com/orgs/{}/people'.format(USERNAME))
+
+        if orgdetection.status_code == 404:
+            pass
+
+        elif orgdetection.status_code == 200:
+            utilities.pi("{}Organizations don't have profiles at this time.".format(ERROR))
+            exit(0)
+
         try:
             ID = regexops.GetUserID(USERNAME)
             if ID is None:
@@ -228,7 +347,18 @@ class REGEXRESPONSES():
             followers.append(follower)
         return followers
 
+    # FOR USER OPS ONLY!
     def CollectStarredRepos(self, USERNAME):
+
+        orgdetection = utilities.GetHTTPRequest('https://github.com/orgs/{}/people'.format(USERNAME))
+
+        if orgdetection.status_code == 404:
+            pass
+
+        elif orgdetection.status_code == 200:
+            utilities.pi("{}Can't query an organizations bookmarks at this time.".format(ERROR))
+            exit(0)
+
         try:
             #print ""
             #FollowersNumber = regexops.GetNumberOfUserFollowers(USERNAME)
@@ -249,7 +379,7 @@ class REGEXRESPONSES():
                 for o in p:
                     time.sleep(1)
                     if o is None:
-                        p.remove(p[-1])
+                        p.remove(p[-1]) # Makes sure Nonetype is removed
                         for z in p:
                             n = regexops.GetRepoNames(z)
                             for so in n:
@@ -257,7 +387,6 @@ class REGEXRESPONSES():
                         return f
                     o = regexops.GrabNextPageOfStarredRepos(o)
                     p.append(o)
-                    print p
                     #print p | for debugging
                 #return p | for debugging
 
@@ -333,7 +462,18 @@ class REGEXRESPONSES():
         except AttributeError:
             return None
 
+    # FOR USER OPS ONLY !
     def CollectRepositories(self, USERNAME):
+
+        orgdetection = utilities.GetHTTPRequest('https://github.com/orgs/{}/people'.format(USERNAME))
+
+        if orgdetection.status_code == 404:
+            pass
+
+        elif orgdetection.status_code == 200:
+            utilities.pi("{}This query is for USERS only! try this insead: './es.py -g org atom repos'".format(ERROR))
+            exit(0)
+
         try:
             #print ""
             #FollowersNumber = regexops.GetNumberOfUserFollowers(USERNAME)
@@ -354,7 +494,7 @@ class REGEXRESPONSES():
                 for o in p:
                     time.sleep(1)
                     if o is None:
-                        p.remove(p[-1])
+                        p.remove(p[-1]) # Makes sure Nonetype is removed
                         for z in p:
                             n = regexops.GetRepoNames(z)
                             for so in n:
@@ -389,7 +529,7 @@ class REGEXRESPONSES():
                 for o in p:
                     time.sleep(1)
                     if o is None:
-                        p.remove(p[-1])
+                        p.remove(p[-1]) # Makes sure Nonetype is removed
                         for z in p:
                             n = regexops.GetNamesOfFollowing(z)
                             for so in n:
@@ -445,7 +585,7 @@ class REGEXRESPONSES():
                 for o in p:
                     time.sleep(1)
                     if o is None:
-                        p.remove(p[-1])
+                        p.remove(p[-1]) # Makes sure Nonetype is removed
                         for z in p:
                             n = regexops.GetNamesOfFollowers(z)
                             for so in n:
