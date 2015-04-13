@@ -15,8 +15,68 @@ FOUND = colors.W+"[FOUND]"+colors.N + ": "
 
 class DatabaseOpertaions():
 
-    # QUERY/LOOKUP INFORMATION
+    #ORG QUERY/LOOKUP INFORMATION
+    def QueryOrgRepoDatabase(self, username, reponame):
+        username = username.lower()
+        reposdatabasepath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/organizations/repositories/{}.repositories'.format(username)
+        utilities.pi(" ")
+        with open(reposdatabasepath, 'r') as file:
+            # Database item check
+            ic = utilities.sbc(reposdatabasepath, reponame) # Database item/name check
+            for item in file:
+                itemlink = item.split(' - ')[1].replace("\n", '') # Link to github profile
+                item = item.split(' - ')[0] # github username
+                if reponame in item and ic is True:
+                    utilities.pi("{}{}".format(FOUND, item + " - " + itemlink))
+                    break
 
+                if ic is None:
+                    utilities.pi("{}{} Not found in {}'s repositories database".format(FAIL, reponame, username))
+                    break
+        utilities.pi(" ")
+
+    def QueryOrgPeopleDatabase(self, username, person):
+        username = username.lower()
+        orgpeoplepath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/organizations/people/{}s.people'.format(username)
+        utilities.pi(" ")
+
+        puib = person.isdigit()
+
+        if puib is False:
+
+            with open(orgpeoplepath, 'r') as file:
+                # Database item check
+                ic = utilities.sbc(orgpeoplepath, person) # Database item/name check
+                for item in file:
+                    itemlink = item.split(' - ')[2].replace('\n', '')
+                    itemid = item.split(' - ')[1].replace("\n", '') # Link to github profile
+                    item = item.split(' - ')[0] # github username
+                    if person in item and ic is True:
+                        utilities.pi("{}{}".format(FOUND, item + " - " + itemid + " - " + itemlink))
+                        break
+
+                    if ic is None:
+                        utilities.pi("{}{} Not found in {}'s people database".format(FAIL, person, username))
+                        break
+            utilities.pi(" ")
+        if puib is True:
+            with open(orgpeoplepath, 'r') as file:
+                # Database item check
+                ic = utilities.sbc(orgpeoplepath, person) # Database item/name check
+                for item in file:
+                    itemlink = item.split(' - ')[2].replace('\n', '')
+                    itemid = item.split(' - ')[0].replace("\n", '') # Link to github profile
+                    item = item.split(' - ')[1] # github username
+                    if person in item and ic is True:
+                        utilities.pi("{}{}".format(FOUND, item + " - " + itemid + " - " + itemlink))
+                        break
+
+                    if ic is None:
+                        utilities.pi("{}{} Not found in {}'s people database".format(FAIL, person, username))
+                        break
+            utilities.pi(" ")
+
+    #USER QUERY/LOOKUP INFORMATION
     def QueryUserStarredRepoDatabase(self, username, reponame):
         username = username.lower()
         reposdatabasepath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/repositories/starred/{}.starred.repos'.format(username)
@@ -187,12 +247,43 @@ class DatabaseOpertaions():
         utilities.pi(" ")
 
     # WRITE INFROMATION TO FILE
-    def WriteActivity2File():
+    def WriteREPOActivity2File():
         # Record public activity.
         pass
 
-    def WriteOrgPeopleToFile(self):
-        pass
+    def WriteOrgPeopleToFile(self, Username, people):
+        utilities.pi(INFO + "Collected {} of {}'s people".format(len(people), Username))
+        time.sleep(3)
+        utilities.pi(INFO + "Writing {} of {}'s people to disk".format(len(people), Username))
+        Username = Username.lower()
+        peoplespath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/organizations/people/{}s.people'.format(Username)
+        with open(peoplespath, 'a+') as file:
+            for line in people:
+                line = line.lower()
+                bc = utilities.sbc(peoplespath, line)
+                if bc is None:
+                    #print line | for debugging rounds.
+                    IDN = regexops.GetUserID(line)
+                    if IDN is None:
+                        IDN = "No Profile Traceroute."
+                    file.write(line + " - " + IDN + " - " + github.domain + line + "\n")
+        utilities.pi(INFO + "Wrote {} of {}'s people to disk.\n".format(len(people), Username))
+
+    def WriteOrgReposToFile(self, Username, Repos):
+        utilities.pi(INFO + "Collected {} of {}'s Repositories".format(len(Repos), Username))
+        time.sleep(3)
+        utilities.pi(INFO + "Wrote {} of {}'s Repositories to disk\n".format(len(Repos), Username))
+        idwe = 'https://github.com'
+        Username = Username.lower()
+        repospath = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + '/core/database/organizations/repositories/{}.repositories'.format(Username)
+        with open(repospath, 'a+') as file:
+            for line in Repos:
+                line = line.lower()
+                bc = utilities.sbc(repospath, line)
+                if bc is None:
+                    #print line | for debugging rounds.
+                    reponame = line.split('/')[2]
+                    file.write(reponame + " - " + idwe + line + "\n")
 
     def WriteUserProfileToFile(self, ID, FOE, FOI, ST, UNAME, RNAME, JOINED, PL, PP):
         UNAME = UNAME.lower()
